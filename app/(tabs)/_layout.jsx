@@ -29,7 +29,7 @@ export default function TabLayout() {
       />
       
 
-      {/* <Tabs.Screen
+      <Tabs.Screen
         name="bookmarkTab"
         options={{
           title: 'Bookmark',
@@ -51,7 +51,7 @@ export default function TabLayout() {
           title: 'Profile',
           tabBarIcon:({color})=> <Feather name="user" size={24} color={color} />
         }}
-      /> */}
+      />
     </Tabs>
   );
 }
