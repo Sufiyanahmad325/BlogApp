@@ -5,11 +5,16 @@ import { Ionicons } from '@expo/vector-icons'
 import { Redirect, router } from 'expo-router'
 
 const UserProfileTab = () => {
+
+  const userDetails = null
+
+  console.log(userDetails)
+
   return (
-    <SafeAreaView edges={['top' , 'bottom']} style={styles.container}>
+    <SafeAreaView edges={['top', 'bottom']} style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Ionicons name="arrow-back" size={24} color="black" onPress={()=>router.back()} />
+        <Ionicons name="arrow-back" size={24} color="black" onPress={() => router.back()} />
         <Text style={styles.headerTitle}>Profile</Text>
         <View style={{ width: 24 }} />
       </View>
@@ -33,18 +38,26 @@ const UserProfileTab = () => {
 
       {/* Menu Section */}
       <View style={styles.menu}>
-        <Pressable style={styles.menuItem} >
+        <Pressable style={styles.menuItem} onPress={() => router.push('screen//myblogsScreen')}>
           <Text style={styles.menuText}>My Blogs</Text>
           <Ionicons name="chevron-forward" size={20} color="#444" />
         </Pressable>
 
-        <Pressable style={styles.menuItem} onPress={()=> router.push('/(tabs)/bookmarkTab')}>
+        <Pressable style={styles.menuItem} onPress={() => router.push('/(tabs)/bookmarkTab')}>
           <Text style={styles.menuText}>Bookmarks</Text>
           <Ionicons name="chevron-forward" size={20} color="#444" />
         </Pressable>
 
         <Pressable style={styles.logout}>
-          <Text style={styles.logoutText}>Logout</Text>
+          {
+            userDetails ? (
+              <Text style={styles.logoutText}>Logout</Text>
+            ) : (
+              <Pressable onPress={() => router.push('screen/loginForm')}>
+                <Text style={styles.logoutText}>LogIn</Text>
+              </Pressable>
+            )
+          }
         </Pressable>
       </View>
     </SafeAreaView>
