@@ -99,16 +99,15 @@ const recentPosts = [
 
 const Cards = ({ item }) => {
   return (
-    <Pressable >
+    <Pressable onPress={()=>router.push('screen/blogDetailsScreen')}>
     <View 
-      style={{ width: 170, height: 160, borderRadius: 10, borderWidth: 1, borderColor: '#ddd', backgroundColor: '#fff' }}>
+      style={{  width: 170, height: 160, borderRadius: 10, borderWidth: 1, borderColor: '#ddd', backgroundColor: '#fff' }}>
 
       <Image source={{ uri: item.image }} style={{ width: '100%', height: 110, borderRadius: 8, marginBottom: 6 }} />
-
       <Text numberOfLines={2}
-        style={{ fontSize: 15, fontWeight: '600', color: '#222', marginBottom: 2 }}>{item.title}
+        style={{paddingHorizontal:2, fontSize: 15, fontWeight: '600', color: '#222', marginBottom: 2 }}>{item.title}
       </Text>
-      <Text
+      <Text 
         numberOfLines={1}
         style={{
           fontSize: 13,
@@ -128,7 +127,7 @@ export default function HomeScreen() {
   const [activeCategory, setActiveCategory] = useState('All');
 
   return (
-    <SafeAreaView edges={['top',]}>
+    <SafeAreaView edges={['top','bottom']}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerText}>BLOGIFY</Text>
@@ -194,7 +193,7 @@ export default function HomeScreen() {
             renderItem={({ item }) => <Cards item={item} />}
             keyExtractor={(item) => item.id}
             numColumns={2}
-            contentContainerStyle={{ marginVertical: 8, alignItems: 'center', gap: 10 }}
+            contentContainerStyle={{ gap: 10 }}
             columnWrapperStyle={{ gap: 8 }}
           />
         </View>
@@ -280,10 +279,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   cardConainer: {
-    marginTop: 10, paddingHorizontal: 10
+    marginVertical: 15, paddingHorizontal: 10
   },
   cardText: {
-    fontSize: 25, fontWeight: 600
+    fontSize: 25, fontWeight: 600,
+    paddingVertical:10
   },
 
 
