@@ -6,51 +6,49 @@ import {
   Pressable,
   StyleSheet,
   Alert,
-  KeyboardAvoidingView, // Good practice for forms on mobile
-  Platform, // Used with KeyboardAvoidingView
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../../ReduxToolkit/BlogRedux';
+import { router } from 'expo-router';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = () => {
-    // Basic validation
+  const dispatch = useDispatch();
+
+  const handleLogin = async () => {
     if (!email || !password) {
       setError('Please enter both email and password.');
       return;
     }
-    
-    if (password.length < 6) {
-        setError('Password must be at least 6 characters long.');
-        return;
+
+    try {
+      const res = await dispatch(loginUser({ email, password })).unwrap();
+
+      console.log('✅ Login successful:', res);
+      Alert.alert('Success', 'You have logged in successfully!');
+      
+      // Reset fields after success
+      setEmail('');
+      setPassword('');
+
+      if(res.success){
+        router.push('/(tabs)')
+      }
+    } catch (err) {
+      console.log('❌ Login failed:', err);
+      Alert.alert('Error', err?.message || 'Invalid credentials');
     }
-
-    // Clear any previous error
-    setError('');
-
-    // --- Authentication Logic Placeholder ---
-    
-    // For demonstration, let's just show an alert
-    Alert.alert(
-      'Login Successful!',
-      `Logged in as: ${email}`,
-      [
-        // In a real app, you would navigate away here (e.g., using Expo Router or React Navigation)
-        { text: 'OK' }
-      ]
-    );
-
-    // Reset fields after successful (simulated) login
-    setEmail('');
-    setPassword('');
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
@@ -78,8 +76,7 @@ const LoginForm = () => {
             placeholder="********"
             value={password}
             onChangeText={setPassword}
-            secureTextEntry={true} // Hides the input text
-            autoCapitalize="none"
+            secureTextEntry={true}
           />
         </View>
 
@@ -87,18 +84,14 @@ const LoginForm = () => {
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         {/* Login Button */}
-        <Pressable 
-          style={styles.loginButton} 
-          onPress={handleLogin}
-        >
+        <Pressable style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.buttonText}>Log In</Text>
         </Pressable>
-        
-        {/* Forgot Password Link */}
-        <Pressable style={styles.forgotPassword}>
-            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-        </Pressable>
 
+        {/* Forgot Password */}
+        <Pressable style={styles.forgotPassword}>
+          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+        </Pressable>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -106,7 +99,6 @@ const LoginForm = () => {
 
 export default LoginForm;
 
-// --- Stylesheet ---
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -155,7 +147,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   loginButton: {
-    backgroundColor: '#007bff', // Primary blue color
+    backgroundColor: '#007bff',
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -174,5 +166,5 @@ const styles = StyleSheet.create({
     color: '#007bff',
     fontSize: 14,
     fontWeight: '500',
-  }
+  },
 });
