@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,11 +10,14 @@ import {
 } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button } from '@react-navigation/elements';
 import { Pressable } from 'react-native';
 import { router } from 'expo-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUsersData } from '../../ReduxToolkit/BlogRedux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const categories = ['All' , 'Travel', 'Lifestyle', 'Technology', 'Nature', 'Food', 'Travel', 'Lifestyle', 'Technology', 'Nature', 'Food'];
+
+const categories = ['All', 'Travel', 'Lifestyle', 'Technology', 'Nature', 'Food', 'Travel', 'Lifestyle', 'Technology', 'Nature', 'Food'];
 
 const recentPosts = [
   {
@@ -99,24 +102,24 @@ const recentPosts = [
 
 const Cards = ({ item }) => {
   return (
-    <Pressable onPress={()=>router.push('screen/blogDetailsScreen')}>
-    <View 
-      style={{  width: 170, height: 160, borderRadius: 10, borderWidth: 1, borderColor: '#ddd', backgroundColor: '#fff' }}>
+    <Pressable onPress={() => router.push('screen/blogDetailsScreen')}>
+      <View
+        style={{ width: 170, height: 160, borderRadius: 10, borderWidth: 1, borderColor: '#ddd', backgroundColor: '#fff' }}>
 
-      <Image source={{ uri: item.image }} style={{ width: '100%', height: 110, borderRadius: 8, marginBottom: 6 }} />
-      <Text numberOfLines={2}
-        style={{paddingHorizontal:2, fontSize: 15, fontWeight: '600', color: '#222', marginBottom: 2 }}>{item.title}
-      </Text>
-      <Text 
-        numberOfLines={1}
-        style={{
-          fontSize: 13,
-          color: '#555'
-        }}>
-        {item.desc}
-      </Text>
+        <Image source={{ uri: item.blogImage || item.image }} style={{ width: '100%', height: 110, borderRadius: 8, marginBottom: 6 }} />
+        <Text numberOfLines={2}
+          style={{ paddingHorizontal: 2, fontSize: 15, fontWeight: '600', color: '#222', marginBottom: 2 }}>{item.title}
+        </Text>
+        <Text
+          numberOfLines={1}
+          style={{
+            fontSize: 13,
+            color: '#555'
+          }}>
+          {item.content || item.desc}
+        </Text>
 
-    </View>
+      </View>
     </Pressable>
 
   );
@@ -125,9 +128,39 @@ const Cards = ({ item }) => {
 export default function HomeScreen() {
 
   const [activeCategory, setActiveCategory] = useState('All');
+  const [token , setToken ] = useState()
+
+  const dispatch = useDispatch()
+
+
+  const { userDetails, allUsersBlogs } = useSelector((state) => state.blogSlice)
+
+
+  // here is accessing cookies => accessToken
+  useEffect(() => {
+    const getToken = async () => {
+      const storedToken = await AsyncStorage.getItem('accessToken');
+      setToken(storedToken);
+    };
+    getToken();
+  }, []);
+
+
+
+
+  useEffect(() => {
+       dispatch(fetchUsersData())
+  }, [token])
+
+
+
+
+
+
+
 
   return (
-    <SafeAreaView edges={['top','bottom']}>
+    <SafeAreaView edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerText}>BLOGIFY</Text>
@@ -151,8 +184,8 @@ export default function HomeScreen() {
           data={categories}
           renderItem={({ item }) => (
             <View style={[styles.categoryBox]}>
-              <Pressable  onPress={() => setActiveCategory(item)}>
-                <Text style={[  styles.categoryText,  activeCategory === item ? styles.activeBtn : '']}>{item}</Text>
+              <Pressable onPress={() => setActiveCategory(item)}>
+                <Text style={[styles.categoryText, activeCategory === item ? styles.activeBtn : '']}>{item}</Text>
               </Pressable>
             </View>
           )}
@@ -189,9 +222,9 @@ export default function HomeScreen() {
           <Text style={styles.cardText}>Recent Blogs</Text>
           <FlatList
             scrollEnabled={false}
-            data={recentPosts}
+            data={allUsersBlogs.length > 0  ? allUsersBlogs : recentPosts}
             renderItem={({ item }) => <Cards item={item} />}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id || item._id}
             numColumns={2}
             contentContainerStyle={{ gap: 10 }}
             columnWrapperStyle={{ gap: 8 }}
@@ -243,7 +276,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   categoryBox: {
-   
+
   },
   categoryText: {
     fontSize: 16,
@@ -253,9 +286,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     borderRadius: 6,
   },
-  activeBtn:{
-      backgroundColor:'black',
-      color:"white"
+  activeBtn: {
+    backgroundColor: 'black',
+    color: "white"
   },
   imageContainer: {
     paddingHorizontal: 8,
@@ -283,7 +316,7 @@ const styles = StyleSheet.create({
   },
   cardText: {
     fontSize: 25, fontWeight: 600,
-    paddingVertical:10
+    paddingVertical: 10
   },
 
 
