@@ -2,11 +2,17 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
+import { Picker } from '@react-native-picker/picker';
+import { useDispatch } from 'react-redux';
+import { newAddBlog } from '../../ReduxToolkit/BlogRedux';
 
 const NewPostTab = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [image, setImage] = useState(null);
+  const [category, setCategory] = useState('')
+  const dispatch = useDispatch()
+  const categories = ['All', 'Travel', 'Lifestyle', 'Technology', 'Nature', 'Food', 'Travel', 'Lifestyle', 'Technology', 'Nature', 'Food'];
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -26,16 +32,38 @@ const NewPostTab = () => {
     }
   };
 
-  const handleSubmit = () => {
-    if (!title || !content) {
+  const handleSubmit = async () => {
+    if (!title.trim() || !content.trim() || !categories.trim()) {
       Alert.alert('Error', 'Please fill all fields');
       return;
     }
 
-    Alert.alert('Success', 'Post submitted successfully!');
-    setTitle('');
-    setContent('');
-    setImage(null);
+    const formData = new FormData();
+
+    formData.append('title', title);
+    formData.append('content', content);
+    formData.append('blogImage', {
+      uri: image,
+      name: 'photo.jpg',
+      type: 'image/jpeg',
+    });
+    formData.append('category', category);
+
+
+    // Here you would typically send formData to your backend server
+    let res = await dispatch(newAddBlog(formData)).unwrap()
+
+    if (res.success) {
+      Alert.alert('Success', 'Blog post created successfully!');
+      setTitle('');
+      setContent('');
+      setImage(null);
+    } else {
+      Alert.alert('Error', 'Failed to create blog post');
+    }
+
+
+
   };
 
 
@@ -50,6 +78,8 @@ const NewPostTab = () => {
         onChangeText={setTitle}
       />
 
+
+
       <TextInput
         style={[styles.input, styles.textArea]}
         placeholder="Enter Content"
@@ -57,6 +87,22 @@ const NewPostTab = () => {
         onChangeText={setContent}
         multiline
       />
+
+      <View style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 8, marginBottom: 12 }}>
+        <Picker
+          selectedValue={category}
+          onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}
+
+        >
+          <Picker.Item label='Select Category' value='' />
+          {
+            categories.map((cat, ind) => (
+              <Picker.Item key={ind} label={cat} value={cat.toLowerCase()} />
+            ))
+          }
+        </Picker>
+      </View>
+
 
       <Pressable style={styles.uploadBox} onPress={pickImage}>
         {image ? (
