@@ -1,14 +1,32 @@
 import React from 'react'
-import { View, Text, Image, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Image, Pressable, StyleSheet, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { Redirect, router } from 'expo-router'
+import { useDispatch, useSelector } from 'react-redux'
+import { logOut } from '../../ReduxToolkit/BlogRedux'
 
 const UserProfileTab = () => {
+  
+  const dispatch = useDispatch()
 
-  const userDetails = null
+  const userDetails = useSelector((state) => state.blogSlice.userDetails)
 
-  console.log(userDetails)
+
+
+  const handleLogOut = async () => {
+    try {
+      let res = await dispatch(logOut()).unwrap();
+  
+      if (res.success) {
+        Alert.alert(res.message);
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Logout failed");
+    }
+  };
+  
 
   return (
     <SafeAreaView edges={['top', 'bottom']} style={styles.container}>
@@ -22,13 +40,13 @@ const UserProfileTab = () => {
       {/* Profile Info */}
       <View style={styles.profileSection}>
         <Image
-          source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
+          source={{ uri: userDetails ? userDetails.avatar : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
           style={styles.profileImage}
         />
-        <Text style={styles.name}>Emma Johnson</Text>
-        <Text style={styles.email}>emma.johnson@example.com</Text>
+        <Text style={styles.name}>{userDetails ? userDetails.fullName : 'Emma Johnson'}</Text>
+        <Text style={styles.email}>{userDetails ? userDetails.email : 'emma.johnson@example.com'}</Text>
         <Text style={styles.bio}>
-          Passionate blogger and traveler. I love writing about lifestyle, technology, and health.
+          { userDetails ? userDetails.bio : 'Passionate blogger and traveler. I love writing about lifestyle, technology, and health.'}
         </Text>
 
         <Pressable style={styles.editBtn}>
@@ -51,7 +69,9 @@ const UserProfileTab = () => {
         <Pressable style={styles.logout}>
           {
             userDetails ? (
-              <Text style={styles.logoutText}>Logout</Text>
+              <Pressable onPress={()=>handleLogOut()}>
+                <Text style={styles.logoutText}>Logout</Text>
+              </Pressable>
             ) : (
               <Pressable onPress={() => router.push('screen/loginForm')}>
                 <Text style={styles.logoutText}>LogIn</Text>
