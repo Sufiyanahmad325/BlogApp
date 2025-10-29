@@ -139,6 +139,34 @@ export const newAddBlog = createAsyncThunk(
 
 
 
+export const likeBlog = createAsyncThunk(
+  'BlogMob/likeBlog',
+  async(blogId, { rejectWithValue }) => {
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken')
+      if (!accessToken) {
+        console.log("❌ No token found")
+        return rejectWithValue("No token found")
+      }
+
+
+      const res = await axios.post('http://10.140.25.102:8000/api/v1/users/like-blog' , { blogId } , {
+        headers:{
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true
+      }
+      )
+      return res.data
+    } catch (error) {
+      console.log("❌ Like Blog Error:", error.response?.data || error)
+    }
+  }
+)
+
+
+
 const initialState = {
   userDetails: null,    // ✅ {} || null always becomes {}, so just use null
   allUsersBlogs: [],     // ✅ [] || null always becomes [], so just use []
@@ -232,6 +260,34 @@ const blogSlice = createSlice({
       state.allUsersBlogs.push(action.payload.data);
     })
 
+    builder.addCase(newAddBlog.rejected , (state , action)=>{
+      state.isLoading = false;
+      state.error = action.payload;
+    })
+
+
+
+    // ====================== like blog===============================================
+
+    builder.addCase(likeBlog.pending , (state,action)=>{
+      state.isLoading = true;
+
+    })
+
+    builder.addCase(likeBlog.fulfilled , (state, action)=>{
+      state.isLoading = false;
+      const updatedBlog = action.payload.data;
+
+      // Update the specific blog in allUsersBlogs
+      state.allUsersBlogs = state.allUsersBlogs.map(blog =>
+        blog._id === updatedBlog._id ? {...updatedBlog , likes} : blog
+      );
+    })
+
+    builder.addCase(likeBlog.rejected , (state, action)=>{
+      state.isLoading = false;
+      state.error = action.payload;
+    })
   
 
 
