@@ -102,7 +102,10 @@ const recentPosts = [
 
 const Cards = ({ item }) => {
   return (
-    <Pressable onPress={() => router.push('screen/blogDetailsScreen')}>
+    <Pressable
+      onPress={() =>router.push({pathname: 'screen/blogDetailsScreen',params: { item: JSON.stringify(item) }})
+      }>
+    
       <View
         style={{ width: 170, height: 160, borderRadius: 10, borderWidth: 1, borderColor: '#ddd', backgroundColor: '#fff' }}>
 
