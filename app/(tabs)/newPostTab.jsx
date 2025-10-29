@@ -12,7 +12,7 @@ const NewPostTab = () => {
   const [image, setImage] = useState(null);
   const [category, setCategory] = useState('')
   const dispatch = useDispatch()
-  const categories = ['All', 'Travel', 'Lifestyle', 'Technology', 'Nature', 'Food', 'Travel', 'Lifestyle', 'Technology', 'Nature', 'Food'];
+  const categories = ['Travel', 'Lifestyle', 'Technology', 'Nature', 'Food', 'Travel', 'Lifestyle', 'Technology', 'Nature', 'Food'];
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -33,7 +33,7 @@ const NewPostTab = () => {
   };
 
   const handleSubmit = async () => {
-    if (!title.trim() || !content.trim() || !categories.trim()) {
+    if (!title.trim() || !content.trim() || !category.trim()) {
       Alert.alert('Error', 'Please fill all fields');
       return;
     }
@@ -54,10 +54,11 @@ const NewPostTab = () => {
     let res = await dispatch(newAddBlog(formData)).unwrap()
 
     if (res.success) {
-      Alert.alert('Success', 'Blog post created successfully!');
+      Alert.alert(res.message);
       setTitle('');
       setContent('');
       setImage(null);
+      setCategory('');
     } else {
       Alert.alert('Error', 'Failed to create blog post');
     }
