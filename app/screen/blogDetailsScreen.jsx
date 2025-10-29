@@ -2,10 +2,15 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View, Image, Pressable, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, Feather } from "@expo/vector-icons";
+import { useLocalSearchParams } from "expo-router";
 
 const blogDetailsScreen = () => {
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
+  const {item} = useLocalSearchParams()
+  const itemParse = JSON.parse(item);
+  
+
 
   const blog = {
     title: "Exploring the Beauty of Nature 🌿",
@@ -27,20 +32,20 @@ const blogDetailsScreen = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Blog Image */}
         <Image
-          source={{ uri: blog.image }}
+           source={{ uri: itemParse? itemParse.blogImage : blog.image }}
           style={{ width: "100%", height: 220, resizeMode: "cover" }}
         />
 
         {/* Writer Info */}
         <View style={{ flexDirection: "row", alignItems: "center", padding: 15 }}>
           <Image
-            source={{ uri: blog.avatar }}
+            source={{ uri: itemParse?.writerAvatar ? itemParse.writerAvatar : blog.avatar }}
             style={{ width: 45, height: 45, borderRadius: 25, marginRight: 10 }}
           />
           <View>
             <Text style={{ fontSize: 16, fontWeight: "600", color: "#333" }}>{blog.author}</Text>
             <Text style={{ fontSize: 13, color: "#777" }}>
-              {new Date(blog.date).toDateString()}
+              {new Date(itemParse?.createdAt || blog.date).toDateString()}
             </Text>
           </View>
         </View>
@@ -48,10 +53,10 @@ const blogDetailsScreen = () => {
         {/* Blog Content */}
         <View style={{ paddingHorizontal: 15 }}>
           <Text style={{ fontSize: 20, fontWeight: "700", color: "#111", marginBottom: 10 }}>
-            {blog.title}
+            {itemParse?.title || blog.title}
           </Text>
           <Text style={{ fontSize: 15, color: "#444", lineHeight: 22 }}>
-            {blog.content}
+            {itemParse?.content || blog.content}
           </Text>
         </View>
 
