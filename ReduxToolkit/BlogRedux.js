@@ -25,7 +25,7 @@ export const loginUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const res = await axios.post(
-        "http://10.140.25.102:8000/api/v1/users/login", 
+        "http://10.140.25.102:8000/api/v1/users/login",
         userData
       );
 
@@ -68,7 +68,7 @@ export const fetchUsersData = createAsyncThunk(
 
       const res = await axios.get(
         "http://10.140.25.102:8000/api/v1/users/current-user-allUserBlog", {
-       headers: {
+        headers: {
           'Authorization': `Bearer ${accessToken}`
         }
       }
@@ -89,7 +89,7 @@ export const logOut = createAsyncThunk(
   "BlogMob/logOut",
   async (_, { rejectWithValue }) => {
     try {
-     let res = await axios.get(`http://10.140.25.102:8000/api/v1/users/logout`);
+      let res = await axios.get(`http://10.140.25.102:8000/api/v1/users/logout`);
       await AsyncStorage.removeItem("accessToken");
       console.log("✅ User logged out and token removed");
       return res.data;
@@ -109,7 +109,6 @@ export const newAddBlog = createAsyncThunk(
   'BlogMob/addBlog',
   async (blogData, { rejectWithValue }) => {
     try {
-      console.log(' =>>>>>>>>>>>>>>>>> '  , blogData)
       const accessToken = await AsyncStorage.getItem('accessToken')
       if (!accessToken) {
         console.log("❌ No token found")
@@ -138,10 +137,12 @@ export const newAddBlog = createAsyncThunk(
 )
 
 
+// ======================= like blog =========================================
 
 export const likeBlog = createAsyncThunk(
   'BlogMob/likeBlog',
-  async(blogId, { rejectWithValue }) => {
+  async (blogId, { rejectWithValue }) => {
+    console.log('this is blog id in redux thunk like blog ', blogId)
     try {
       const accessToken = await AsyncStorage.getItem('accessToken')
       if (!accessToken) {
@@ -150,8 +151,8 @@ export const likeBlog = createAsyncThunk(
       }
 
 
-      const res = await axios.post('http://10.140.25.102:8000/api/v1/users/like-blog' , { blogId } , {
-        headers:{
+      const res = await axios.post('http://10.140.25.102:8000/api/v1/users/like-blog', { blogId }, {
+        headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json'
         },
@@ -214,7 +215,7 @@ const blogSlice = createSlice({
         state.token = action.payload?.data?.token || null;
         state.successMessage = "Login successful";
       })
-      
+
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
@@ -251,16 +252,16 @@ const blogSlice = createSlice({
 
     // ======================add blog===============================================
 
-    builder.addCase(newAddBlog.pending, (state)=>{
+    builder.addCase(newAddBlog.pending, (state) => {
       state.isLoading = true;
     })
 
-    builder.addCase(newAddBlog.fulfilled , (state , action)=>{
+    builder.addCase(newAddBlog.fulfilled, (state, action) => {
       state.isLoading = false;
       state.allUsersBlogs.push(action.payload.data);
     })
 
-    builder.addCase(newAddBlog.rejected , (state , action)=>{
+    builder.addCase(newAddBlog.rejected, (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
     })
@@ -269,26 +270,31 @@ const blogSlice = createSlice({
 
     // ====================== like blog===============================================
 
-    builder.addCase(likeBlog.pending , (state,action)=>{
+    builder.addCase(likeBlog.pending, (state, action) => {
       state.isLoading = true;
 
     })
 
-    builder.addCase(likeBlog.fulfilled , (state, action)=>{
+    builder.addCase(likeBlog.fulfilled, (state, action) => {
       state.isLoading = false;
+
       const updatedBlog = action.payload.data;
+      console.log('this is your palyload like blog ', updatedBlog)
 
       // Update the specific blog in allUsersBlogs
       state.allUsersBlogs = state.allUsersBlogs.map(blog =>
-        blog._id === updatedBlog._id ? {...updatedBlog , likes} : blog
+        blog._id === updatedBlog._id ? { ...updatedBlog, likes:updatedBlog.likes } : blog
       );
     })
 
-    builder.addCase(likeBlog.rejected , (state, action)=>{
+    builder.addCase(likeBlog.rejected, (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
+
+
+
     })
-  
+
 
 
   }
