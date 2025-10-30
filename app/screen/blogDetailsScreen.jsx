@@ -1,16 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Image, Pressable, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
+import { likeBlog } from "../../ReduxToolkit/BlogRedux";
 
 const blogDetailsScreen = () => {
-  const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
-  const {item} = useLocalSearchParams()
+  const [islikeBlog, setIslikeBlog] = useState()
+  const { item } = useLocalSearchParams()
   const itemParse = JSON.parse(item);
-  
 
+
+  const { userDetails, allUsersBlogs } = useSelector((state) => state.blogSlice)
+
+  const dispatch = useDispatch()
+
+
+  const handleLikesBlog = () => {
+    dispatch(likeBlog(itemParse._id))
+  }
+
+
+  useEffect(() => {
+    if (allUsersBlogs && itemParse) {
+      const Liked = allUsersBlogs.find(blog => blog._id === itemParse._id)?.likes.includes(userDetails._id)
+      console.log('hello sir =>>>>>>>>>>>>>> ' , islikeBlog)
+      setIslikeBlog(Liked)
+    }
+  }, [userDetails, itemParse, allUsersBlogs])
 
   const blog = {
     title: "Exploring the Beauty of Nature 🌿",
@@ -32,7 +51,7 @@ const blogDetailsScreen = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Blog Image */}
         <Image
-           source={{ uri: itemParse? itemParse.blogImage : blog.image }}
+          source={{ uri: itemParse ? itemParse.blogImage : blog.image }}
           style={{ width: "100%", height: 220, resizeMode: "cover" }}
         />
 
@@ -70,24 +89,24 @@ const blogDetailsScreen = () => {
           }}
         >
           <Pressable
-            onPress={() => setLiked(!liked)}
+            onPress={() => handleLikesBlog()}
             style={{
               flexDirection: "row",
               alignItems: "center",
-              backgroundColor: liked ? "#ffe6e6" : "#f5f5f5",
+              backgroundColor: islikeBlog ? "#ffe6e6" : "#f5f5f5",
               paddingVertical: 10,
               paddingHorizontal: 20,
               borderRadius: 8,
             }}
           >
             <Ionicons
-              name={liked ? "heart" : "heart-outline"}
+              name={islikeBlog ? "heart" : "heart-outline"}
               size={22}
-              color={liked ? "red" : "#555"}
+              color={islikeBlog ? "red" : "#555"}
               style={{ marginRight: 6 }}
             />
-            <Text style={{ fontSize: 15, color: liked ? "red" : "#333", fontWeight: "500" }}>
-              {liked ? "Liked" : "Like"}
+            <Text style={{ fontSize: 15, color: islikeBlog ? "red" : "#333", fontWeight: "500" }}>
+              {islikeBlog ? "Liked" : "Like"}
             </Text>
           </Pressable>
 
@@ -96,7 +115,7 @@ const blogDetailsScreen = () => {
             style={{
               flexDirection: "row",
               alignItems: "center",
-              backgroundColor: bookmarked ? "#e6f0ff" : "#f5f5f5",
+              backgroundColor: islikeBlog ? "#e6f0ff" : "#f5f5f5",
               paddingVertical: 10,
               paddingHorizontal: 20,
               borderRadius: 8,
