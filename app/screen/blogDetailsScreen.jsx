@@ -4,11 +4,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
-import { likeBlog } from "../../ReduxToolkit/BlogRedux";
+import { bookmarkedBlog, likeBlog } from "../../ReduxToolkit/BlogRedux";
 
 const blogDetailsScreen = () => {
-  const [bookmarked, setBookmarked] = useState(false);
   const [islikeBlog, setIslikeBlog] = useState()
+  const [isBookmarked, setIsBookmarked] = useState()
   const { item } = useLocalSearchParams()
   const itemParse = JSON.parse(item);
 
@@ -22,12 +22,21 @@ const blogDetailsScreen = () => {
     dispatch(likeBlog(itemParse._id))
   }
 
+  const handleBookmarked = async () => {
+    let res = await dispatch(bookmarkedBlog(itemParse._id)).unwrap()
+  }
+
 
   useEffect(() => {
     if (allUsersBlogs && itemParse) {
+
       const Liked = allUsersBlogs.find(blog => blog._id === itemParse._id)?.likes.includes(userDetails._id)
-      console.log('hello sir =>>>>>>>>>>>>>> ' , islikeBlog)
       setIslikeBlog(Liked)
+
+      const Bookmarked = userDetails.bookmarked.includes(itemParse._id)
+      setIsBookmarked(Bookmarked)
+
+
     }
   }, [userDetails, itemParse, allUsersBlogs])
 
@@ -111,30 +120,30 @@ const blogDetailsScreen = () => {
           </Pressable>
 
           <Pressable
-            onPress={() => setBookmarked(!bookmarked)}
+            onPress={() => handleBookmarked()}
             style={{
               flexDirection: "row",
               alignItems: "center",
-              backgroundColor: islikeBlog ? "#e6f0ff" : "#f5f5f5",
+              backgroundColor: isBookmarked ? "#e6f0ff" : "#f5f5f5",
               paddingVertical: 10,
               paddingHorizontal: 20,
               borderRadius: 8,
             }}
           >
             <Feather
-              name={bookmarked ? "bookmark" : "bookmark"}
+              name={isBookmarked ? "bookmark" : "bookmark"}
               size={22}
-              color={bookmarked ? "#007bff" : "#555"}
+              color={isBookmarked ? "#007bff" : "#555"}
               style={{ marginRight: 6 }}
             />
             <Text
               style={{
                 fontSize: 15,
-                color: bookmarked ? "#007bff" : "#333",
+                color: isBookmarked ? "#007bff" : "#333",
                 fontWeight: "500",
               }}
             >
-              {bookmarked ? "Bookmarked" : "Bookmark"}
+              {isBookmarked ? "Bookmarked" : "Bookmark"}
             </Text>
           </Pressable>
         </View>
