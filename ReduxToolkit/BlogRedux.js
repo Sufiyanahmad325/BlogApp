@@ -151,13 +151,14 @@ export const likeBlog = createAsyncThunk(
       }
 
 
-      const res = await axios.post('http://10.140.25.102:8000/api/v1/users/like-blog', { blogId }, {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        withCredentials: true
-      }
+      const res = await axios.post('http://10.140.25.102:8000/api/v1/users/like-blog', { blogId },
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          },
+          withCredentials: true
+        }
       )
       return res.data
     } catch (error) {
@@ -165,6 +166,37 @@ export const likeBlog = createAsyncThunk(
     }
   }
 )
+
+
+// =================================bookmark blog========================================
+
+export const bookmarkedBlog = createAsyncThunk(
+  'BlogMob/bookmarkBlog',
+  async (blogId, { rejectWithValue }) => {
+    console.log('redux==========> ' , blogId)
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken')
+      if (!accessToken) {
+        console.log("❌ No token found")
+        return rejectWithValue("No token found")
+      }
+
+      const res = await axios.post('http://10.140.25.102:8000/api/v1/users/bookmark-blog', { blogId },
+        {
+          headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+            withCredentials: true
+          }
+        }
+      )
+      return res.data
+    } catch (error) {
+      console.log("❌ Bookmark Blog Error:", error.response?.data || error)
+    }
+  }
+)
+
 
 
 
@@ -283,18 +315,31 @@ const blogSlice = createSlice({
 
       // Update the specific blog in allUsersBlogs
       state.allUsersBlogs = state.allUsersBlogs.map(blog =>
-        blog._id === updatedBlog._id ? { ...updatedBlog, likes:updatedBlog.likes } : blog
+        blog._id === updatedBlog._id ? { ...updatedBlog, likes: updatedBlog.likes } : blog
       );
     })
 
     builder.addCase(likeBlog.rejected, (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
-
-
-
     })
 
+
+    // ====================== bookmark blog===============================================
+    builder.addCase(bookmarkedBlog.pending, (state, action) => {
+      state.isLoading = true;
+    })
+
+    builder.addCase(bookmarkedBlog.fulfilled, (state, action) => {
+      state.isLoading = false;
+      const updatedBlog = action.payload.data;
+      state.userDetails = {...state.userDetails , bookmarked: updatedBlog.bookmarked}
+    })
+
+    builder.addCase(bookmarkedBlog.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    })
 
 
   }
