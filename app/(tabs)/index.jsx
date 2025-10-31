@@ -109,7 +109,7 @@ const Cards = ({ item }) => {
       <View
         style={{ width: 170, height: 160, borderRadius: 10, borderWidth: 1, borderColor: '#ddd', backgroundColor: '#fff' }}>
 
-        <Image source={{ uri: item.blogImage || item.image }} style={{ width: '100%', height: 110, borderRadius: 8, marginBottom: 6 }} />
+        <Image source={{ uri: item.blogImage || 'https://images.pexels.com/photos/34005820/pexels-photo-34005820.jpeg' }} style={{ width: '100%', height: 110, borderRadius: 8, marginBottom: 6 }} />
         <Text numberOfLines={2}
           style={{ paddingHorizontal: 2, fontSize: 15, fontWeight: '600', color: '#222', marginBottom: 2 }}>{item.title}
         </Text>
