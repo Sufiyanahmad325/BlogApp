@@ -24,6 +24,7 @@ const blogDetailsScreen = () => {
 
   const handleBookmarked = async () => {
     let res = await dispatch(bookmarkedBlog(itemParse._id)).unwrap()
+    console.log(res);
   }
 
 
@@ -33,7 +34,7 @@ const blogDetailsScreen = () => {
       const Liked = allUsersBlogs.find(blog => blog._id === itemParse._id)?.likes.includes(userDetails._id)
       setIslikeBlog(Liked)
 
-      const Bookmarked = userDetails.bookmarked.includes(itemParse._id)
+      const Bookmarked = userDetails.bookmarkedPost.includes(itemParse._id)
       setIsBookmarked(Bookmarked)
 
 
