@@ -228,7 +228,32 @@ export const deleteBlog = createAsyncThunk(
 
 // =================================updateProfleDetails========================================
 
+export const updateProfileDetails = createAsyncThunk(
+  'BlogMob/updateProfile',
+  async (formData, { rejectWithValue }) => {
+    console.log('redux============> ' , formData)
+    const accessToken = await AsyncStorage.getItem('accessToken')
+    if (!accessToken) {
+      console.log("❌ No token found")
+      return rejectWithValue("No token found")
+    }
+    try {
+      const res = await axios.post('http://10.140.25.102:8000/api/v1/users/update-user-profile',  formData ,
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      )
+      return res.data
+    } catch (error) {
+      console.log("❌ Update Profile Error:", error.response?.data || error)
+      return rejectWithValue(error.response?.data?.message || 'Update profile failed')
+    }
 
+  }
+)
 
 
 
@@ -392,11 +417,32 @@ const blogSlice = createSlice({
       state.error = action.payload;
     })
 
+
+
+
+    // =======================================update-User-profile========================================
+
+    builder.addCase(updateProfileDetails.pending, (state) => {
+      state.isLoading = true;
+    })
+    builder.addCase(updateProfileDetails.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.userDetails = action.payload.data;
+    })
+
+    builder.addCase(updateProfileDetails.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    })
+
+
   }
+
+
+
 })
 
 
-// =======================================
 
 export const { addBlog } = blogSlice.actions
 export default blogSlice.reducer
