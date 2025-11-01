@@ -173,7 +173,7 @@ export const likeBlog = createAsyncThunk(
 export const bookmarkedBlog = createAsyncThunk(
   'BlogMob/bookmarkBlog',
   async (blogId, { rejectWithValue }) => {
-    console.log('redux==========> ' , blogId)
+    console.log('redux==========> ', blogId)
     try {
       const accessToken = await AsyncStorage.getItem('accessToken')
       if (!accessToken) {
@@ -196,6 +196,14 @@ export const bookmarkedBlog = createAsyncThunk(
     }
   }
 )
+
+
+// ==================================delete blog========================================
+
+
+
+// =================================updateProfleDetails========================================
+
 
 
 
@@ -333,7 +341,7 @@ const blogSlice = createSlice({
     builder.addCase(bookmarkedBlog.fulfilled, (state, action) => {
       state.isLoading = false;
       const updatedBlog = action.payload.data;
-      state.userDetails = {...state.userDetails , bookmarked: updatedBlog.bookmarked}
+      state.userDetails = { ...state.userDetails, bookmarkedPost: updatedBlog.bookmarkedPost }
     })
 
     builder.addCase(bookmarkedBlog.rejected, (state, action) => {
@@ -342,8 +350,29 @@ const blogSlice = createSlice({
     })
 
 
+    // ====================== delete blog===============================================
+
+    builder.addCase(deleteBlog.pending, (state, action) => {
+      state.isLoading = true;
+    })
+
+    builder.addCase(deleteBlog.fulfilled, (state, action) => {
+
+      state.isLoading = false;
+      const deletedBlogId = action.payload.blogId;
+      state.allUsersBlogs = action.payload.data
+    })
+
+    builder.addCase(deleteBlog.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    })
+
   }
 })
+
+
+// =======================================
 
 export const { addBlog } = blogSlice.actions
 export default blogSlice.reducer
