@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
+import { router } from 'expo-router';
 
 // Placeholder data for bookmarked posts (you would replace this with real state)
 const bookmarkedPosts = [
@@ -73,8 +75,8 @@ const bookmarkedPosts = [
 
 const BookmarkItem = ({ item }) => {
   return (
-    <Pressable style={styles.listItem}>
-      <Image source={{ uri: item.image }} style={styles.listImage} />
+    <Pressable onPress={()=>router.push({pathname: 'screen/blogDetailsScreen',params: { item: JSON.stringify(item) }})} style={styles.listItem}>
+      <Image source={{ uri: item.blogImage }} style={styles.listImage} />
       <View style={styles.listDetails}>
         <Text style={styles.listCategory}>{item.category}</Text>
         <Text style={styles.listTitle} numberOfLines={2}>
@@ -85,18 +87,23 @@ const BookmarkItem = ({ item }) => {
         </Text>
       </View>
       {/* Optional: Add a button to un-bookmark */}
-      <Ionicons 
-        name="bookmark" 
-        size={24} 
-        color="#000" 
-        
-      />
+     
     </Pressable>
   );
 };
 
 export default function BookmarkTab() {
-  if (bookmarkedPosts.length === 0) {
+
+  const {userDetails , allUsersBlogs} = useSelector((state)=>state.blogSlice);
+  const [bookmarkedPostData, setBookmarkedPostData] = useState([]);
+
+  useEffect(()=>{
+    let bookmarkedPostData = allUsersBlogs.filter(blog=> userDetails.bookmarkedPost.includes(blog._id));
+    setBookmarkedPostData(bookmarkedPostData);
+  },[userDetails, allUsersBlogs])
+
+
+  if (bookmarkedPostData.length === 0 || bookmarkedPosts.length === 0) {
     return (
       <SafeAreaView style={styles.emptyContainer} >
         <Ionicons name="bookmark-outline" size={80} color="#ccc" />
@@ -110,8 +117,8 @@ export default function BookmarkTab() {
       <Text style={styles.headerTitle}>My Bookmarks</Text>
       <View style={styles.separator}></View>
       <FlatList
-        data={bookmarkedPosts}
-        keyExtractor={(item) => item.id}
+        data={bookmarkedPostData || bookmarkedPosts}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => <BookmarkItem item={item} />}
         contentContainerStyle={styles.listContent}
       />
