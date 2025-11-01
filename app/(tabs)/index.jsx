@@ -157,11 +157,6 @@ export default function HomeScreen() {
 
 
 
-
-
-
-
-
   return (
     <SafeAreaView edges={['top', 'bottom']}>
       {/* Header */}
@@ -171,7 +166,7 @@ export default function HomeScreen() {
           <Ionicons name="notifications-outline" size={24} />
           <Image
             source={{
-              uri: 'https://images.pexels.com/photos/30253590/pexels-photo-30253590.jpeg',
+              uri: userDetails?.avatar || 'https://images.pexels.com/photos/30253590/pexels-photo-30253590.jpeg',
             }}
             style={styles.featuredImage}
           />
