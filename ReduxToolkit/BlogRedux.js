@@ -200,7 +200,31 @@ export const bookmarkedBlog = createAsyncThunk(
 
 // ==================================delete blog========================================
 
+export const deleteBlog = createAsyncThunk(
+  'BlogMob/deleteBlog',
+  async (blogId, { rejectWithValue }) => {
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken')
+      if (!accessToken) {
+        console.log("❌ No token found")
+        return rejectWithValue("No token found")
+      }
+      const res = await axios.post('http://10.140.25.102:8000/api/v1/users/delete-blog', { blogId },
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          withCredentials: true
+        }
+      )
+      return res.data
+    } catch (error) {
+      console.log("❌ Delete Blog Error:", error.response?.data || error)
 
+    }
+  }
+)
 
 // =================================updateProfleDetails========================================
 
