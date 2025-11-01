@@ -49,7 +49,7 @@ const UserProfileTab = () => {
           { userDetails ? userDetails.bio : 'Passionate blogger and traveler. I love writing about lifestyle, technology, and health.'}
         </Text>
 
-        <Pressable style={styles.editBtn}>
+        <Pressable style={styles.editBtn} onPress={() => router.push('screen/editProfile')}>
           <Text style={styles.editText}>Edit Profile</Text>
         </Pressable>
       </View>
