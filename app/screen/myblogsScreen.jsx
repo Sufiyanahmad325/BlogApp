@@ -44,17 +44,20 @@ const MyBlogsScreen = () => {
   ]);
 
   const handleLike = (id) => {
-    
+
   };
 
-  const handleEdit = (id) => {
-    Alert.alert("Edit Blog", `Editing Blog ID: ${id}`);
+  const handleEdit = (item) => {
+    router.push({
+      pathname: "screen/editBlog",
+      params: {item: JSON.stringify(item) },
+    });
   };
 
   const handleDelete = (id) => {
     Alert.alert("Confirm Delete", "Are you sure you want to delete this blog?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Delete", style: "destructive",onPress: () => dispatch(deleteBlog(id)) },
+      { text: "Delete", style: "destructive", onPress: () => dispatch(deleteBlog(id)) },
     ]);
   };
 
@@ -68,13 +71,13 @@ const MyBlogsScreen = () => {
 
   const card = ({ item }) => (
     <View style={styles.blogCard}>
-      <Image source={{ uri: item?.blogImage ? item.blogImage : 'https://images.pexels.com/photos/33771131/pexels-photo-33771131.jpeg' ||  item.image  }} style={styles.blogImage} />
+      <Image source={{ uri: item?.blogImage ? item.blogImage : 'https://images.pexels.com/photos/33771131/pexels-photo-33771131.jpeg' || item.image }} style={styles.blogImage} />
       <View style={styles.blogInfo}>
         <Text style={styles.blogTitle}>{item.title}</Text>
         <Text style={styles.blogDate}>
           Posted on: {new Date(item.createdAt).toDateString()}
         </Text>
-        <Text style={styles.blogContent}>{item.content}</Text>
+        <Text style={styles.blogContent}>{item.content.length > 150 ? item.content.slice(0, 100) : item.content}</Text>
 
         <View style={styles.statsRow}>
           <Ionicons
@@ -96,7 +99,7 @@ const MyBlogsScreen = () => {
           </Pressable>
 
           <View style={styles.rightBtns}>
-            <Pressable style={styles.editBtn} onPress={() => handleEdit(item.id)}>
+            <Pressable style={styles.editBtn} onPress={() => handleEdit(item)}>
               <Ionicons name="create-outline" size={16} color="#fff" />
               <Text style={styles.btnText}>Edit</Text>
             </Pressable>
@@ -116,7 +119,7 @@ const MyBlogsScreen = () => {
       <Text style={styles.heading}>My Blogs</Text>
 
       <FlatList
-        data={myblog ||blogs}
+        data={myblog || blogs}
         renderItem={card}
         keyExtractor={(item) => item._id.toString()}
         showsVerticalScrollIndicator={false}
