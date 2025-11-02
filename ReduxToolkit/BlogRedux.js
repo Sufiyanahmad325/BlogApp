@@ -25,7 +25,7 @@ export const loginUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const res = await axios.post(
-        "http://10.140.25.102:8000/api/v1/users/login",
+        "http://10.202.47.102:8000/api/v1/users/login",
         userData
       );
 
@@ -67,7 +67,7 @@ export const fetchUsersData = createAsyncThunk(
       }
 
       const res = await axios.get(
-        "http://10.140.25.102:8000/api/v1/users/current-user-allUserBlog", {
+        "http://10.202.47.102:8000/api/v1/users/current-user-allUserBlog", {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }
@@ -89,9 +89,11 @@ export const logOut = createAsyncThunk(
   "BlogMob/logOut",
   async (_, { rejectWithValue }) => {
     try {
-      let res = await axios.get(`http://10.140.25.102:8000/api/v1/users/logout`);
-      await AsyncStorage.removeItem("accessToken");
-      console.log("✅ User logged out and token removed");
+      let res = await axios.get(`http://10.202.47.102:8000/api/v1/users/logout`);
+      if (res.data.success) {
+        await AsyncStorage.removeItem("accessToken");
+        console.log("✅ User logged out and token removed");
+      }
       return res.data;
     } catch (error) {
       console.error("Logout error:", error);
@@ -116,7 +118,7 @@ export const newAddBlog = createAsyncThunk(
       }
 
       const res = await axios.post(
-        'http://10.140.25.102:8000/api/v1/users/uploadBlog',
+        'http://10.202.47.102:8000/api/v1/users/uploadBlog',
         blogData,
         {
           headers: {
@@ -151,7 +153,7 @@ export const likeBlog = createAsyncThunk(
       }
 
 
-      const res = await axios.post('http://10.140.25.102:8000/api/v1/users/like-blog', { blogId },
+      const res = await axios.post('http://10.202.47.102:8000/api/v1/users/like-blog', { blogId },
         {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -181,7 +183,7 @@ export const bookmarkedBlog = createAsyncThunk(
         return rejectWithValue("No token found")
       }
 
-      const res = await axios.post('http://10.140.25.102:8000/api/v1/users/bookmark-blog', { blogId },
+      const res = await axios.post('http://10.202.47.102:8000/api/v1/users/bookmark-blog', { blogId },
         {
           headers: {
             "Authorization": `Bearer ${accessToken}`,
@@ -209,7 +211,7 @@ export const deleteBlog = createAsyncThunk(
         console.log("❌ No token found")
         return rejectWithValue("No token found")
       }
-      const res = await axios.post('http://10.140.25.102:8000/api/v1/users/delete-blog', { blogId },
+      const res = await axios.post('http://10.202.47.102:8000/api/v1/users/delete-blog', { blogId },
         {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -231,14 +233,14 @@ export const deleteBlog = createAsyncThunk(
 export const updateProfileDetails = createAsyncThunk(
   'BlogMob/updateProfile',
   async (formData, { rejectWithValue }) => {
-    console.log('redux============> ' , formData)
+    console.log('redux============> ', formData)
     const accessToken = await AsyncStorage.getItem('accessToken')
     if (!accessToken) {
       console.log("❌ No token found")
       return rejectWithValue("No token found")
     }
     try {
-      const res = await axios.post('http://10.140.25.102:8000/api/v1/users/update-user-profile',  formData ,
+      const res = await axios.post('http://10.202.47.102:8000/api/v1/users/update-user-profile', formData,
         {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -254,6 +256,32 @@ export const updateProfileDetails = createAsyncThunk(
 
   }
 )
+
+
+// ==================================edit-blog========================================
+export const editBlog = createAsyncThunk(
+  'BlogMob/editBlog',
+  async (blogData, { rejectWithValue }) => {
+    console.log('redux============> ', blogData)
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken')
+      if (!accessToken) {
+        console.log("❌ No token found")
+        return rejectWithValue("No token found")
+      }
+      const res = await axios.post('http://10.202.47.102:8000/api/v1/users/edit-blog', blogData, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'multipart/form-data',
+        }
+      })
+      console.log('✅ Blog edited successfully:', res.data)
+      return res.data
+    } catch (error) {
+      console.log("❌ Edit Blog Error:", error.response?.data || error)
+      return rejectWithValue(error.response?.data?.message || 'Edit blog failed')
+    }
+  })
 
 
 
@@ -436,8 +464,27 @@ const blogSlice = createSlice({
     })
 
 
-  }
 
+    // =======================================edit-blog========================================
+
+    builder.addCase(editBlog.pending, (state) => {
+      state.isLoading = true;
+    })
+
+    builder.addCase(editBlog.fulfilled, (state, action) => {
+      state.isLoading = false;
+      const updatedBlog = action.payload.data;
+
+      state.allUsersBlogs = state.allUsersBlogs.map(blog =>
+        blog._id === updatedBlog._id ? updatedBlog : blog
+      );
+    });
+
+    builder.addCase(editBlog.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    })
+  }
 
 
 })
