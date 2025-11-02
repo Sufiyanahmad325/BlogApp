@@ -172,8 +172,17 @@ const styles = StyleSheet.create({
   },
 
   logoutText: {
-    color: 'red',
+    color: 'white',
     fontSize: 16,
     fontWeight: '600',
+    borderColor: 'blue',
+    borderWidth: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 29,
+    borderRadius: 8,
+    backgroundColor: 'black',
   },
+
+  
+  
 })
