@@ -24,7 +24,6 @@ const blogDetailsScreen = () => {
 
   const handleBookmarked = async () => {
     let res = await dispatch(bookmarkedBlog(itemParse._id)).unwrap()
-    console.log(res);
   }
 
 
