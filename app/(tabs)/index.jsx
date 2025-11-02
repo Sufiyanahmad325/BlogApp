@@ -17,7 +17,7 @@ import { fetchUsersData } from '../../ReduxToolkit/BlogRedux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-const categories = ['All', 'Travel', 'Lifestyle', 'Technology', 'Nature', 'Food', 'Travel', 'Lifestyle', 'Technology', 'Nature', 'Food'];
+const categories = ['All', 'Travel', 'Lifestyle', 'Technology', 'Nature', 'Food'];
 
 const recentPosts = [
   {
@@ -103,9 +103,9 @@ const recentPosts = [
 const Cards = ({ item }) => {
   return (
     <Pressable
-      onPress={() =>router.push({pathname: 'screen/blogDetailsScreen',params: { item: JSON.stringify(item) }})
+      onPress={() => router.push({ pathname: 'screen/blogDetailsScreen', params: { item: JSON.stringify(item) } })
       }>
-    
+
       <View
         style={{ width: 170, height: 160, borderRadius: 10, borderWidth: 1, borderColor: '#ddd', backgroundColor: '#fff' }}>
 
@@ -131,12 +131,23 @@ const Cards = ({ item }) => {
 export default function HomeScreen() {
 
   const [activeCategory, setActiveCategory] = useState('All');
-  const [token , setToken ] = useState()
+  const [filteredBlog, setFilteredBlog] = useState([]);
+  const [token, setToken] = useState()
 
   const dispatch = useDispatch()
 
 
   const { userDetails, allUsersBlogs } = useSelector((state) => state.blogSlice)
+
+
+  useEffect(() => {
+    if (activeCategory === 'All') {
+      setFilteredBlog(allUsersBlogs)
+    } else {
+      const filtered = allUsersBlogs.filter(blog => blog.category === activeCategory.toLowerCase())
+      setFilteredBlog(filtered)
+    }
+  }, [activeCategory, allUsersBlogs])
 
 
   // here is accessing cookies => accessToken
@@ -152,7 +163,7 @@ export default function HomeScreen() {
 
 
   useEffect(() => {
-       dispatch(fetchUsersData())
+    dispatch(fetchUsersData())
   }, [token])
 
 
@@ -218,15 +229,30 @@ export default function HomeScreen() {
         {/* cards */}
         <View style={styles.cardConainer}>
           <Text style={styles.cardText}>Recent Blogs</Text>
-          <FlatList
-            scrollEnabled={false}
-            data={allUsersBlogs.length > 0  ? allUsersBlogs : recentPosts}
-            renderItem={({ item }) => <Cards item={item} />}
-            keyExtractor={(item) => item.id || item._id}
-            numColumns={2}
-            contentContainerStyle={{ gap: 10 }}
-            columnWrapperStyle={{ gap: 8 }}
-          />
+
+          {
+            allUsersBlogs?.length > 0 ? (
+              filteredBlog?.length > 0 ? (
+                <FlatList
+                  scrollEnabled={false}
+                  data={filteredBlog}
+                  keyExtractor={(item) => item._id}
+                  numColumns={2}
+                  renderItem={({ item }) => <Cards item={item} />}
+                  contentContainerStyle={{ gap: 10 }}
+                  columnWrapperStyle={{ gap: 8 }}
+                />
+              ) : (
+                <Text style={{ fontSize: 18, textAlign: 'center', marginTop: 20 }}>
+                  🚫 No blogs found in "{activeCategory}"
+                </Text>
+              )
+            ) : (
+              <Text style={{ fontSize: 18, textAlign: 'center', marginTop: 20 }}>
+                 Please Login Account
+              </Text>
+            )
+          }
         </View>
 
 
