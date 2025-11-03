@@ -118,12 +118,20 @@ const MyBlogsScreen = () => {
     <SafeAreaView edges={["top", "bottom"]} style={styles.container}>
       <Text style={styles.heading}>My Blogs</Text>
 
-      <FlatList
+     {
+      myblog.length > 0 ? (
+        <FlatList
         data={myblog || blogs}
         renderItem={card}
         keyExtractor={(item) => item._id.toString()}
         showsVerticalScrollIndicator={false}
       />
+      ) : (
+        <View style={{ flex:1, justifyContent: "center", alignItems: "center" }}>
+          <Text style={{ fontSize: 18, color: "#666" }}>You have not authored any blogs yet.</Text>
+        </View>
+      )
+     }
     </SafeAreaView>
   );
 };
