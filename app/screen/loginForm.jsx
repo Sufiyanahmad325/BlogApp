@@ -92,6 +92,10 @@ const LoginForm = () => {
         <Pressable style={styles.forgotPassword}>
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </Pressable>
+        {/* signup  */}
+        <Pressable style={styles.forgotPassword} onPress={() => router.push('screen/signUp')}>
+          <Text style={styles.forgotPasswordText}>SignUp</Text>
+        </Pressable>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
