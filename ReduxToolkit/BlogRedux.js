@@ -8,11 +8,11 @@ export const registerUser = createAsyncThunk(
   'BlogMob/signup',
   async (userData, { rejectWithValue }) => {
     try {
-      const res = await axios.post('http://localhost:8000/api/v1/users/register', userData)
+      const res = await axios.post('http://10.202.47.102:8000/api/v1/users/register', userData)
       if (res.data.message) {
         alert('user register successfully')
       }
-
+return res.data
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Sign up failed')
     }
@@ -144,7 +144,6 @@ export const newAddBlog = createAsyncThunk(
 export const likeBlog = createAsyncThunk(
   'BlogMob/likeBlog',
   async (blogId, { rejectWithValue }) => {
-    console.log('this is blog id in redux thunk like blog ', blogId)
     try {
       const accessToken = await AsyncStorage.getItem('accessToken')
       if (!accessToken) {
@@ -309,8 +308,7 @@ const blogSlice = createSlice({
 
     builder.addCase(registerUser.fulfilled, (state) => {
       state.isLoading = false;
-      state.userDetails = action.payload.data.data; // ✅ backend returns user in `data`
-      state.successMessage = action.payload.message; // "user created successfully"
+      
     })
 
     builder.addCase(registerUser.rejected, (state) => {
@@ -396,7 +394,6 @@ const blogSlice = createSlice({
       state.isLoading = false;
 
       const updatedBlog = action.payload.data;
-      console.log('this is your palyload like blog ', updatedBlog)
 
       // Update the specific blog in allUsersBlogs
       state.allUsersBlogs = state.allUsersBlogs.map(blog =>
