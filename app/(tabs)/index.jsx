@@ -249,7 +249,7 @@ export default function HomeScreen() {
               )
             ) : (
               <Text style={{ fontSize: 18, textAlign: 'center', marginTop: 20 }}>
-                 Please Login Account
+                Please Login Account
               </Text>
             )
           }
@@ -298,6 +298,7 @@ const styles = StyleSheet.create({
   },
   categoryList: {
     gap: 5,
+    padding: 5,
   },
   categoryBox: {
 
@@ -342,6 +343,4 @@ const styles = StyleSheet.create({
     fontSize: 25, fontWeight: 600,
     paddingVertical: 10
   },
-
-
 });
