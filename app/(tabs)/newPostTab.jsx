@@ -5,6 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import { useDispatch } from 'react-redux';
 import { newAddBlog } from '../../ReduxToolkit/BlogRedux';
+import { router } from 'expo-router';
 
 const NewPostTab = () => {
   const [title, setTitle] = useState('');
@@ -59,6 +60,7 @@ const NewPostTab = () => {
       setContent('');
       setImage(null);
       setCategory('');
+      router.push("/(tabs)");
     } else {
       Alert.alert('Error', 'Failed to create blog post');
     }
