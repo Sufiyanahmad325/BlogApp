@@ -71,7 +71,7 @@ const blogDetailsScreen = () => {
             style={{ width: 45, height: 45, borderRadius: 25, marginRight: 10 }}
           />
           <View>
-            <Text style={{ fontSize: 16, fontWeight: "600", color: "#333" }}>{blog.author}</Text>
+            <Text style={{ fontSize: 16, fontWeight: "600", color: "#333" }}>{ itemParse.authorName || 'Unknown User'}</Text>
             <Text style={{ fontSize: 13, color: "#777" }}>
               {new Date(itemParse?.createdAt || blog.date).toDateString()}
             </Text>
