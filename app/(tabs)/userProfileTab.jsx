@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { logOut } from '../../ReduxToolkit/BlogRedux'
 
 const UserProfileTab = () => {
-  
+
   const dispatch = useDispatch()
 
   const userDetails = useSelector((state) => state.blogSlice.userDetails)
@@ -17,7 +17,7 @@ const UserProfileTab = () => {
   const handleLogOut = async () => {
     try {
       let res = await dispatch(logOut()).unwrap();
-  
+
       if (res.success) {
         Alert.alert(res.message);
       }
@@ -26,7 +26,7 @@ const UserProfileTab = () => {
       Alert.alert("Logout failed");
     }
   };
-  
+
 
   return (
     <SafeAreaView edges={['top', 'bottom']} style={styles.container}>
@@ -46,7 +46,7 @@ const UserProfileTab = () => {
         <Text style={styles.name}>{userDetails ? userDetails.fullName : 'Emma Johnson'}</Text>
         <Text style={styles.email}>{userDetails ? userDetails.email : 'emma.johnson@example.com'}</Text>
         <Text style={styles.bio}>
-          { userDetails ? userDetails.bio : 'Passionate blogger and traveler. I love writing about lifestyle, technology, and health.'}
+          {userDetails ? userDetails.bio : 'Passionate blogger and traveler. I love writing about lifestyle, technology, and health.'}
         </Text>
 
         <Pressable style={styles.editBtn} onPress={() => router.push('screen/editProfile')}>
@@ -66,10 +66,15 @@ const UserProfileTab = () => {
           <Ionicons name="chevron-forward" size={20} color="#444" />
         </Pressable>
 
+        <Pressable style={styles.menuItem} onPress={() => router.push('screen/settings')}>
+          <Text style={styles.menuText}>Settings</Text>
+          <Ionicons name="chevron-forward" size={20} color="#444" />
+        </Pressable>
+
         <Pressable style={styles.logout}>
           {
             userDetails ? (
-              <Pressable onPress={()=>handleLogOut()}>
+              <Pressable onPress={() => handleLogOut()}>
                 <Text style={styles.logoutText}>Logout</Text>
               </Pressable>
             ) : (
@@ -183,6 +188,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
 
-  
-  
+
+
 })
