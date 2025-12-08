@@ -32,7 +32,7 @@ const SettingsScreen = () => {
           <Switch value={notifications} onValueChange={setNotifications} />
         </View>
 
-        <Pressable style={styles.item} onPress={() => router.push('/screen/changePassword')}>
+        <Pressable style={styles.item} onPress={() => router.push('screen/changepassword')}>
           <Text style={styles.text}>Change Password</Text>
           <Ionicons name="chevron-forward" size={20} color="#444" />
         </Pressable>
@@ -42,7 +42,7 @@ const SettingsScreen = () => {
           <Ionicons name="chevron-forward" size={20} color="#444" />
         </Pressable>
 
-        <Pressable style={styles.item} onPress={() => router.push('/screen/terms')}>
+        <Pressable style={styles.item} onPress={() => router.push('/screen/termsConditions')}>
           <Text style={styles.text}>Terms & Conditions</Text>
           <Ionicons name="chevron-forward" size={20} color="#444" />
         </Pressable>
